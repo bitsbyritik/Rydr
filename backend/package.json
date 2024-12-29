@@ -21,6 +21,7 @@
     "mongoose": "^8.9.2"
   },
   "scripts": {
+    "build": "tsc -b",
     "dev": "ts-node src/app.ts"
   }
 }
