@@ -9,7 +9,7 @@ interface IUser {
     };
     email: string;
     password: string;
-    socketId: string;
+    socketId?: string;
     generateAuthToken: () => string;
     comparePassword: (password: string) => Promise<boolean>;
     hashPassword: (password: string) => Promise<string>;
