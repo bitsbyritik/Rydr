@@ -1,8 +1,8 @@
-import mongoose, {Schema, Document} from "mongoose";
+import mongoose, {Schema, Document, Model} from "mongoose";
 import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-interface IUser {
+interface IUser extends Document {
     fullname: {
         firstname: string;
         lastname: string;
@@ -12,8 +12,11 @@ interface IUser {
     socketId?: string;
     generateAuthToken: () => string;
     comparePassword: (password: string) => Promise<boolean>;
-    hashPassword: (password: string) => Promise<string>;
 }
+
+interface IUserModel extends Model<IUser> {
+    hashPassword: (password: string) => Promise<string>;
+  }
 
 const userSchema = new Schema <IUser>({
     fullname: {
@@ -59,4 +62,4 @@ userSchema.statics.hashPassword = async function(password:string) {
     return await bcrypt.hash(password, 10);
 }
 
-export const userModel = mongoose.model<IUser>('user', userSchema);
+export const userModel = mongoose.model<IUser, IUserModel>('user', userSchema);
