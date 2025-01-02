@@ -1,6 +1,7 @@
 import { Request, Response, RequestHandler } from "express";
 import { userModel } from "../models/userModel";
 import { userLoginSchema, userRegistrationSchema } from "../schemas";
+import { BlacklistToken } from "../models/blaclistToken.model";
 
 export interface AuthenticatedRequest extends Request {
     user?: any; // Replace `any` with your `IUser` type
@@ -109,5 +110,25 @@ export const getUserProfile:RequestHandler = async(req:AuthenticatedRequest, res
         res.status(500).json({
             message: "Unable to fetch user profile"
         })
+    }
+}
+
+export const logoutUser = async(req: Request, res: Response) => {
+    try {
+        const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+        // res.clearCookie('token'); 
+
+        await BlacklistToken.create({token: token});
+        res.status(200).json({
+            message: 'User Logged out'
+        });
+        return;
+
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Logout Failed!'
+        });
+        return ;
     }
 }

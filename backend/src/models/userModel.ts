@@ -50,7 +50,7 @@ const userSchema = new Schema <IUser>({
 });
 
 userSchema.methods.generateAuthToken = function() {
-    const token = jwt.sign({_id: this._id}, process.env.JWT_SECRET as string);
+    const token = jwt.sign({_id: this._id}, process.env.JWT_SECRET as string, {expiresIn: '24hr'});
     return token;
 }
 
