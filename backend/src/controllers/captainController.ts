@@ -1,8 +1,7 @@
 import { Request, RequestHandler, Response } from "express";
-import { captainRegistrationSchema } from "../schemas";
+import { captainLoginSchema, captainRegistrationSchema } from "../schemas";
 import { error } from "console";
 import { captainModel } from "../models/captainModel";
-import { userModel } from "../models/userModel";
 
 export const registerCaptain: RequestHandler = async(req: Request, res: Response): Promise<void> => {
     try {
@@ -11,7 +10,7 @@ export const registerCaptain: RequestHandler = async(req: Request, res: Response
         if(!validateData.success){
             res.status(404).json({
                 error: error,
-                message: 'Inavlid Data',
+                message: 'Invalid Data',
             });
             return;
         }
@@ -21,15 +20,6 @@ export const registerCaptain: RequestHandler = async(req: Request, res: Response
         if(existingCaptain){
             res.status(400).json({
                 message: 'This email is already registered as captain',
-            });
-            return;
-        }
-
-        const existingUser = await userModel.findOne({email: validateData.data.email});
-
-        if(existingUser){
-            res.status(400).json({
-                message: 'This email is already registered as user',
             });
             return;
         }
@@ -53,5 +43,49 @@ export const registerCaptain: RequestHandler = async(req: Request, res: Response
             message: 'Captain registration failed!' 
         });
         return;
+    }
+}
+
+export const loginCaptain: RequestHandler = async(req:Request, res: Response): Promise<void> => {
+    try {
+        const validateData = captainLoginSchema.safeParse(req.body);
+
+        if(!validateData.success){
+            res.status(404).json({
+                err: validateData.error,
+                message: 'Invalid Input Data',
+            });
+            return;
+        }
+
+        const existingCaptain = await captainModel.findOne({email: validateData.data.email}).select('+password');
+        if(!existingCaptain){
+            res.status(400).json({
+                messgae: 'Email is not registered, Please signup!'
+            });
+            return ;
+        }
+
+        const isMatch = await existingCaptain.comparePassword(validateData.data.password);
+        if(!isMatch){
+            res.status(404).json({
+                message: "Incorrect Password",
+            });
+            return ;
+        }
+
+        const token = existingCaptain.generateAuthToken();
+
+        res.status(201).json({
+            message: 'Logged In succesfully',
+            token: token
+        })
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Login Failed',
+        });
+        return ;
+
     }
 }

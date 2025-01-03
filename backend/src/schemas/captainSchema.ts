@@ -21,3 +21,11 @@ export const captainRegistrationSchema = z.object({
     })
 }).strict();
 
+export const captainLoginSchema = z.object({
+  email: z.string().email('Enter a valid email address'),
+  password: z
+    .string()
+    .min(8, 'Password should be at least 8 characters')
+    .regex(/[a-zA-Z]/, 'Password must contain at least one letter'),
+}).strict();
+
