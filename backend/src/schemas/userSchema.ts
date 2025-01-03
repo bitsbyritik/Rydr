@@ -11,7 +11,7 @@ export const userRegistrationSchema = z.object({
     .min(8, 'Password should be at least 8 characters')
     .regex(/[a-zA-Z]/, 'Password must contain at least one letter'),
   socketId: z.string().optional(),
-});
+}).strict();
 
 export const userLoginSchema = z.object({
   email: z.string().email('Enter a valid email address'),
@@ -19,7 +19,7 @@ export const userLoginSchema = z.object({
     .string()
     .min(8, 'Password should be atleast 8 charachters')
     .regex(/[a-zA-Z]/, 'Password must conatain at least one letter'),
-})
+}).strict();
 
 export type UserRegistration = z.infer<typeof userRegistrationSchema>;
 export type UserLogin = z.infer<typeof userLoginSchema>;
