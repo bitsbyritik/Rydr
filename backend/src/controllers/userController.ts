@@ -5,6 +5,7 @@ import { BlacklistToken } from "../models/blaclistToken.model";
 
 export interface AuthenticatedRequest extends Request {
     user?: any; // Replace `any` with your `IUser` type
+    captain?: any;
 }
 
 export const registerUser: RequestHandler = async(req: Request, res: Response):Promise<void> => {
@@ -116,7 +117,7 @@ export const getUserProfile:RequestHandler = async(req:AuthenticatedRequest, res
 export const logoutUser = async(req: Request, res: Response) => {
     try {
         const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
-        // res.clearCookie('token'); 
+        res.clearCookie('token'); 
 
         await BlacklistToken.create({token: token});
         res.status(200).json({

@@ -2,6 +2,7 @@ import { Request, RequestHandler, Response } from "express";
 import { captainLoginSchema, captainRegistrationSchema } from "../schemas";
 import { error } from "console";
 import { captainModel } from "../models/captainModel";
+import { AuthenticatedRequest } from "./userController";
 
 export const registerCaptain: RequestHandler = async(req: Request, res: Response): Promise<void> => {
     try {
@@ -87,5 +88,26 @@ export const loginCaptain: RequestHandler = async(req:Request, res: Response): P
         });
         return ;
 
+    }
+}
+
+export const getCaptainProfile:RequestHandler = async(req: AuthenticatedRequest, res:Response) => {
+    try {
+        const captain = req.captain;
+
+        if(!captain) {
+            res.status(404).json({
+                message: 'Capatin not found'
+            });
+            return ;
+        }
+
+        res.status(200).json(captain);
+    }  catch(err) {
+        console.log(err);
+        res.status(500).json({
+            message: "Unable to fetch user profile",
+        });
+        return ;
     }
 }
