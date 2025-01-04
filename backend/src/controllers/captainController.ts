@@ -3,6 +3,7 @@ import { captainLoginSchema, captainRegistrationSchema } from "../schemas";
 import { error } from "console";
 import { captainModel } from "../models/captainModel";
 import { AuthenticatedRequest } from "./userController";
+import { BlacklistToken } from "../models/blaclistToken.model";
 
 export const registerCaptain: RequestHandler = async(req: Request, res: Response): Promise<void> => {
     try {
@@ -107,6 +108,26 @@ export const getCaptainProfile:RequestHandler = async(req: AuthenticatedRequest,
         console.log(err);
         res.status(500).json({
             message: "Unable to fetch user profile",
+        });
+        return ;
+    }
+}
+
+export const logoutCaptain = async(req: Request, res: Response) => {
+    try {
+        const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+        res.clearCookie('token'); 
+
+        await BlacklistToken.create({token: token});
+        res.status(200).json({
+            message: 'Captain Logged out'
+        });
+        return;   
+
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Logout Failed!'
         });
         return ;
     }

@@ -62,6 +62,14 @@ export const authCaptain = async(req: Request, res:Response, next: NextFunction)
             return ;
         }
 
+        const isBlacklisted = await BlacklistToken.findOne({token: token});
+        if(isBlacklisted) {
+            res.status(401).json({
+                message: "Unauthorized",
+            });
+            return;
+        }
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as DecodedToken;
         const captain = await captainModel.findOne({_id: decoded._id}); 
         
